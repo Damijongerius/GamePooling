@@ -1,0 +1,8 @@
+
+#poolSettings
+max-worlds: 8
+players-per-game-pool: 4
+
+pool-wait-time: 30
+pool-start-timer-on-player-count: 2
+pool-start-delay: 5

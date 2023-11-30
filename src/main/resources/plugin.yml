@@ -1,0 +1,4 @@
+name: GamePooling
+version: '${project.version}'
+main: com.dami.gamepooling.GamePooling
+api-version: '1.17'

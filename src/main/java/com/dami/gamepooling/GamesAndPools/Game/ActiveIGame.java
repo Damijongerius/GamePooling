@@ -1,5 +1,6 @@
 package com.dami.gamepooling.GamesAndPools.Game;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -36,4 +37,10 @@ public abstract class ActiveIGame implements IGame {
     public abstract void onPlayerClick(InventoryClickEvent event);
 
     public abstract void onPlayerHitOtherPlayer(Player hitter, Player hit);
+
+    public abstract void onPlayerGetHitByEntity(Entity hitter, Player hit);
+
+    public abstract void onPlayerMove(Player player);
+
+    public abstract IGame gameDone();
 }

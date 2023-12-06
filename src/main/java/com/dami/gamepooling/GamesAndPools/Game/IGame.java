@@ -9,6 +9,8 @@ public interface IGame {
 
     ActiveIGame startGame();
 
+    GameState getGameState();
+
     long getStartTime();
 
     World getWorld();

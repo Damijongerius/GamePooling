@@ -2,3 +2,7 @@ name: GamePooling
 version: '${project.version}'
 main: com.dami.gamepooling.GamePooling
 api-version: '1.17'
+commands:
+  queue:
+    description: join a queue
+    usage: queue <join|leave|help|info> <queue name>

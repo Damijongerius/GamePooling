@@ -9,9 +9,9 @@ public class PoolManager extends BukkitRunnable {
 
     public static Map<String, IPool> poolTypes = new HashMap<>();
 
-    private List<IPool> IPools = new ArrayList<>();
+    private final List<IPool> Pools = new ArrayList<>();
 
-    private List<UUID> players = new ArrayList<>();
+    private final List<UUID> players = new ArrayList<>();
 
     public PoolManager(GamePooling gamePooling) {
         runTaskTimerAsynchronously(gamePooling, 20, 20);
@@ -24,7 +24,7 @@ public class PoolManager extends BukkitRunnable {
 
         players.add(player);
 
-        for (IPool IPool : IPools) {
+        for (IPool IPool : Pools) {
             boolean stop = false;
 
             if(IPool.getPLayers().size() < IPool.getMaxPlayers()) {
@@ -37,7 +37,7 @@ public class PoolManager extends BukkitRunnable {
             if(IPool.getPLayers().size() == IPool.getMaxPlayers()) {
                 IPool newIPool = poolTypes.get(poolType);
                 newIPool.addPlayer(player);
-                IPools.add(newIPool);
+                Pools.add(newIPool);
             }
 
             if(IPool.getPLayers().size() >= IPool.getMinPlayers()) {
@@ -53,7 +53,7 @@ public class PoolManager extends BukkitRunnable {
 
         players.remove(player);
 
-        for (IPool IPool : IPools) {
+        for (IPool IPool : Pools) {
             boolean stop = false;
             if(IPool.getPLayers().contains(player)) {
                 IPool.removePlayer(player);
@@ -70,6 +70,11 @@ public class PoolManager extends BukkitRunnable {
         }
 
     }
+
+    public List<String> getPoolTypes(){
+        return (List<String>) poolTypes.keySet();
+    }
+
 
     @Override
     public void run() {

@@ -1,6 +1,7 @@
 package com.dami.gamepooling.GamesAndPools.Pool;
 
 import com.dami.gamepooling.GamesAndPools.Game.IGame;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 import java.util.UUID;
@@ -9,11 +10,11 @@ public interface IPool {
 
     List<UUID> getPLayers();
 
-    List<UUID> addPlayer(UUID player);
+    void addPlayer(UUID player);
 
-    List<UUID> removePlayer(UUID player);
+    void removePlayer(UUID player);
 
-    <T extends IGame> T gameClass();
+    Class<? extends IGame> gameClass();
 
     int getStartDelay();
 

@@ -11,13 +11,13 @@ public interface IGame {
 
     GameState getGameState();
 
+    GameState setGameState(GameState gameState);
+
     long getStartTime();
 
     World getWorld();
 
     List<UUID> getPlayers();
 
-    void addPlayer(UUID player);
-
-    void removePlayer(UUID player);
+    void setPlayers(List<UUID> players);
 }

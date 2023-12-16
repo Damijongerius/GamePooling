@@ -1,8 +1,8 @@
-name: GamePooling
-version: '${project.version}'
-main: com.dami.gamepooling.GamePooling
-api-version: '1.17'
+name: "GamePooling"
+main: "com.dami.gamepooling.GamePooling"
+version: "1.0.0"
+api-version: "1.18"
 commands:
-  queue:
-    description: join a queue
-    usage: queue <join|leave|help|info> <queue name>
+    queue:
+        description: join a queue
+        usage: queue <join|leave|help|info> <queue name>

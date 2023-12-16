@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -22,23 +23,27 @@ public class QueueCommand implements TabExecutor {
     }
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if(sender.hasPermission("gamepooling.que")) {
+        if(sender.hasPermission("gamepooling.queue")) {
         } else {
             sender.sendMessage("You do not have permission!");
+            return true;
         }
 
         Player player = (Player) sender;
 
         if(args.length == 0){
             help(player);
+            return true;
         }
-
+        System.out.println(Arrays.toString(args));
         switch (args[0]) {
             case "join" -> {
+                player.sendMessage("joined queue");
                 if(args.length == 2){
                     joinQueue(player,args[1]);
                     break;
                 }
+                joinQueue(player);
                 //join random
             }
             case "leave" -> leaveQueue(player);

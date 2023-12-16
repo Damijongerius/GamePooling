@@ -1,11 +1,8 @@
 package com.dami.gamepooling.GamesAndPools.Game;
 
+import com.dami.gamepooling.GamePooling;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,15 +29,15 @@ public abstract class ActiveIGame implements IGame {
 
     public abstract void onPlayerRespawn(Player player);
 
-    public abstract void onInteractEvent(PlayerInteractEvent event);
-
-    public abstract void onPlayerClick(InventoryClickEvent event);
-
     public abstract void onPlayerHitOtherPlayer(Player hitter, Player hit);
 
     public abstract void onPlayerGetHitByEntity(Entity hitter, Player hit);
 
-    public abstract void onPlayerMove(Player player);
+    public abstract void CleanGame();
 
-    public abstract IGame gameDone();
+    public abstract IGame resetGame();
+
+    public void endSession(){
+        GamePooling.getInstance().getGameManager().endGame(this);
+    }
 }

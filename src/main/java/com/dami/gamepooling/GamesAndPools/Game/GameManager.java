@@ -1,36 +1,43 @@
 package com.dami.gamepooling.GamesAndPools.Game;
 
+import com.dami.gamepooling.GamesAndPools.Pool.IPool;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class GameManager extends BukkitRunnable implements Listener {
 
-    Map<Integer, IGame> games = new HashMap<>();
+    private Map<Integer, IGame> games = new HashMap<>();
 
-    final Map<String, PlayGround> maps;
+    final List<String> maps;
 
-    private GameManager(Map<String,PlayGround> maps){
+    protected GameManager(List<String> maps) {
         this.maps = maps;
+
+        AtomicInteger id = new AtomicInteger();
+        maps.forEach((name) -> {
+            for (int i = 0; i < 2; i++) {
+                registerGame(name, id.get());
+                id.getAndIncrement();
+            }
+        });
+
     }
 
-    public void registerGame(IGame IGame, int id) {
-        games.put(id, IGame);
-    }
-
-    abstract void StartGame();
+    public abstract void registerGame(String playground, int id);
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
@@ -70,31 +77,37 @@ public abstract class GameManager extends BukkitRunnable implements Listener {
         }
     }
 
-    @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent e){
-        ActiveIGame activeIGame = getPlayerInGame(e.getPlayer());
-        if(activeIGame != null) activeIGame.onInteractEvent(e);
+    public boolean PoolToGame(IPool pool){
+        AtomicBoolean done = new AtomicBoolean(false);
+        games.forEach((id,game) ->{
+            if(game.getClass() ==  pool.gameClass()){
+                if(game.getGameState() == GameState.WAITING){
+                    game.setPlayers(pool.getPLayers());
+                    games.remove(id);
+
+                    games.put(id,game.startGame());
+                    done.set(true);
+                    game.setGameState(GameState.RUNNING);
+                }
+            }
+        });
+
+        return done.get();
     }
 
-    @EventHandler
-    public void onPlayerClick(InventoryClickEvent e){
-        ActiveIGame activeIGame = getPlayerInGame((Player) e.getWhoClicked());
-        if(activeIGame != null) activeIGame.onPlayerClick(e);
+    public void endGame(ActiveIGame endingGame) {
+        games.forEach((id, game) -> {
+            if (game == endingGame) {
+                endingGame.CleanGame();
+
+                games.replace(id, endingGame.resetGame());
+            }
+        });
     }
 
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent e){
-        ActiveIGame activeIGame = getPlayerInGame(e.getPlayer());
-        if(activeIGame != null) activeIGame.onPlayerMove(e.getPlayer());
-    }
 
-    abstract void generateWorld(int id);
 
-    abstract void deleteWorld(int id);
-
-    abstract void stopGame(int id);
-
-    List<IGame> getGames(){
+    public List<IGame> getGames(){
         return (List<IGame>) games.values();
     }
 
@@ -107,6 +120,15 @@ public abstract class GameManager extends BukkitRunnable implements Listener {
             }
         }
         return null;
+    }
+
+    @Override
+    public void run(){
+        games.forEach((id,game) ->{
+            if(game instanceof ActiveIGame){
+                ((ActiveIGame) game).update();
+            }
+        });
     }
 
 }

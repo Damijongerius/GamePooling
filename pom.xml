@@ -6,7 +6,7 @@
 
     <groupId>com.dami</groupId>
     <artifactId>GamePooling</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <packaging>jar</packaging>
 
     <name>GamePooling</name>
@@ -77,11 +77,6 @@
             <artifactId>Multiverse-Core</artifactId>
             <version>4.3.1</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
-            <version>1.19.2-R0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

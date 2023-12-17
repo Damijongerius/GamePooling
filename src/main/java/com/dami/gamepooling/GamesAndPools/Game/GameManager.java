@@ -1,6 +1,8 @@
 package com.dami.gamepooling.GamesAndPools.Game;
 
+import com.dami.gamepooling.GamePooling;
 import com.dami.gamepooling.GamesAndPools.Pool.IPool;
+import com.onarandombox.MultiverseCore.MultiverseCore;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,9 +22,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class GameManager extends BukkitRunnable implements Listener {
 
-    private Map<Integer, IGame> games = new HashMap<>();
+    private MultiverseCore multiverseCore;
 
-    final List<String> maps;
+    protected Map<Integer, IGame> games = new HashMap<>();
+
+    protected final List<String> maps;
 
     protected GameManager(List<String> maps) {
         this.maps = maps;
@@ -35,6 +39,7 @@ public abstract class GameManager extends BukkitRunnable implements Listener {
             }
         });
 
+        multiverseCore = GamePooling.getInstance().getMultiverseCore();
     }
 
     public abstract void registerGame(String playground, int id);
@@ -105,7 +110,17 @@ public abstract class GameManager extends BukkitRunnable implements Listener {
         });
     }
 
+    protected void cloneWorld(String worldName, int id){
+        multiverseCore.cloneWorld(worldName, worldName + id, "VoidGen");
+    }
 
+    protected boolean worldExists(String worldName){
+        return multiverseCore.getMVWorldManager().isMVWorld(worldName);
+    }
+
+    protected void deleteWorld(String worldName){
+        multiverseCore.getMVWorldManager().deleteWorld(worldName);
+    }
 
     public List<IGame> getGames(){
         return (List<IGame>) games.values();

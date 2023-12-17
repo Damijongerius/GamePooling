@@ -2,6 +2,9 @@ package com.dami.gamepooling.GamesAndPools.Pool;
 
 import com.dami.gamepooling.GamePooling;
 import com.dami.gamepooling.GamesAndPools.Game.GameManager;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -9,7 +12,7 @@ import java.util.*;
 
 public class PoolManager extends BukkitRunnable{
 
-    private Map<String, IPool> poolTypes;
+    private final Map<String, IPool> poolTypes;
 
     private final List<IPool> pools = new ArrayList<>();
 
@@ -24,41 +27,60 @@ public class PoolManager extends BukkitRunnable{
     }
 
     public void onPlayerJoinPool(UUID player, String poolType) {
-        if(players.contains(player)) return;
-
-        if(!poolTypes.containsKey(poolType)) return;
-
-        players.add(player);
-
-        List<IPool> tempPools = new ArrayList<>();
+        System.out.println("player joining pool");
+        if (players.contains(player)) {
+            Bukkit.getPlayer(player).sendMessage("already in queue");
+            return;
+        }
+        System.out.println("player not in queue");
+        if (!poolTypes.containsKey(poolType)) {
+            Bukkit.getPlayer(player).sendMessage("pool type not found");
+            return;
+        }
+        System.out.println("pool type found");
+        List<IPool> possiblePools = new ArrayList<>();
         pools.forEach((pool) -> {
-            if(pool.getClass() == poolTypes.get(poolType).getClass()){
-                tempPools.add(pool);
+            if (pool.getClass() == poolTypes.get(poolType).getClass()) {
+                possiblePools.add(pool);
             }
         });
+        System.out.println("possible pools found");
 
-        for (IPool pool : tempPools) {
-            boolean stop = false;
-
-            if(pool.getPLayers().size() < pool.getMaxPlayers()) {
-                pool.addPlayer(player);
-                stop = true;
+        if(possiblePools.isEmpty()){
+            System.out.println("possible pools empty");
+            IPool newIPool = poolTypes.get(poolType);
+            newIPool.addPlayer(player);
+            Bukkit.getPlayer(player).sendMessage("joined queue");
+            pools.add(newIPool);
+            if (newIPool.getPLayers().size() == newIPool.getMinPlayers()) {
+                newIPool.setStartDelay(newIPool.getMinPlayerDelay());
             }
+            return;
+        }
 
-            if (!stop) continue;
+        possiblePools.forEach((pool) -> {
+            System.out.println(pool.getClass().getSimpleName());
+            if (pool.getPLayers().size() < pool.getMaxPlayers()) {
 
-            if(pool.getPLayers().size() == pool.getMaxPlayers()) {
+                Bukkit.getPlayer(player).sendMessage("joined queue");
+                pool.addPlayer(player);
+                if (pool.getPLayers().size() == pool.getMinPlayers()) {
+                    pool.setStartDelay(pool.getMinPlayerDelay());
+                }
+                return;
+
+            }else if(pool.getPLayers().size() == pool.getMaxPlayers()) {
+
                 IPool newIPool = poolTypes.get(poolType);
                 newIPool.addPlayer(player);
+                Bukkit.getPlayer(player).sendMessage("joined queue");
                 pools.add(newIPool);
+                if (pool.getPLayers().size() == pool.getMinPlayers()) {
+                    pool.setStartDelay(pool.getMinPlayerDelay());
+                }
+                return;
             }
-
-            if(pool.getPLayers().size() == pool.getMinPlayers()) {
-                pool.setStartDelay(pool.getMinPlayerDelay());
-            }
-
-            break;
-        }
+        });
     }
 
     public void onPlayerLeavePool(UUID player) {
@@ -92,12 +114,20 @@ public class PoolManager extends BukkitRunnable{
     @Override
     public void run() {
         pools.forEach((pool) -> {
-            if(pool.getStartDelay() != 0) {
+            if(pool.getStartDelay() == -1){
+                pool.getPLayers().forEach((player) -> {
+                    Bukkit.getPlayer(player).spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("WaitingForPlayers..."));
+                });
+                return;
+            }
+            if(pool.getStartDelay() > 0) {
                 pool.setStartDelay(pool.getStartDelay() -1);
+                pool.getPLayers().forEach((player) -> {
+                    Bukkit.getPlayer(player).spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("Starting in " + pool.getStartDelay()));
+                });
             }else{
                 if(gameManager.PoolToGame(pool)){
                     pools.remove(pool);
-                    return;
                 }
             }
         });

@@ -35,10 +35,8 @@ public class QueueCommand implements TabExecutor {
             help(player);
             return true;
         }
-        System.out.println(Arrays.toString(args));
         switch (args[0]) {
             case "join" -> {
-                player.sendMessage("joined queue");
                 if(args.length == 2){
                     joinQueue(player,args[1]);
                     break;
@@ -67,8 +65,8 @@ public class QueueCommand implements TabExecutor {
 
     private void joinQueue(Player player){
         List<String> pooltypes = poolManager.getPoolTypes();
-        Random rnd = new Random(pooltypes.size());
-        joinQueue(player,pooltypes.get(rnd.nextInt()));
+        Random rnd = new Random();
+        joinQueue(player,pooltypes.get(rnd.nextInt(pooltypes.size())));
     }
 
     private void leaveQueue(Player player) {

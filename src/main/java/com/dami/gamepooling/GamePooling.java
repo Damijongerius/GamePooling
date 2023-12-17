@@ -25,12 +25,10 @@ public final class GamePooling extends JavaPlugin {
         // Plugin startup logic
         instance = this;
 
-        getMultiverseCore();
-
-        new QueueCommand(this,poolManager);
+        initMultiverseCore();
     }
 
-    private void getMultiverseCore(){
+    private void initMultiverseCore(){
         this.multiverseCore = (MultiverseCore) getServer().getPluginManager().getPlugin("Multiverse-Core");
 
         if (multiverseCore == null) {
@@ -41,21 +39,27 @@ public final class GamePooling extends JavaPlugin {
     }
 
     public void registerGameManager(GameManager manager, Map<String, IPool> poolMap){
-
         if(this.gameManager != null){
             Bukkit.getLogger().log(Level.INFO,"game manager is already registered ");
             return;
         }
+        getLogger().log(Level.INFO,"game manager is being registered");
 
         this.gameManager = manager;
         gameManager.runTaskTimerAsynchronously(this, 0, 0);
 
         poolManager = new PoolManager(this, gameManager, poolMap);
 
+        new QueueCommand(this,poolManager);
+
     }
 
     public GameManager getGameManager(){
         return gameManager;
+    }
+
+    public MultiverseCore getMultiverseCore(){
+        return multiverseCore;
     }
 
     public static GamePooling getInstance(){

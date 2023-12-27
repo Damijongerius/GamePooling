@@ -36,7 +36,7 @@ public class QueueCommand implements TabExecutor {
             return true;
         }
         switch (args[0]) {
-            case "join" -> {
+            case "join" : {
                 if(args.length == 2){
                     joinQueue(player,args[1]);
                     break;
@@ -44,15 +44,21 @@ public class QueueCommand implements TabExecutor {
                 joinQueue(player);
                 //join random
             }
-            case "leave" -> leaveQueue(player);
-            case "info" -> {
+            break;
+
+            case "leave" : leaveQueue(player);
+            break;
+
+            case "info" : {
                 if(args.length == 2){
                     queueInfo(player,args[1]);
                     break;
                 }
                 info(player);
             }
-            default -> help(player);
+            break;
+
+            default : help(player);
         }
 
         return true;

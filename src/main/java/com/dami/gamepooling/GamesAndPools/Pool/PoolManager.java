@@ -113,23 +113,27 @@ public class PoolManager extends BukkitRunnable{
 
     @Override
     public void run() {
-        pools.forEach((pool) -> {
+        if(pools.isEmpty()) return;
+
+        Iterator<IPool> iterator = pools.iterator();
+        while (iterator.hasNext()) {
+            IPool pool = iterator.next();
             if(pool.getStartDelay() == -1){
                 pool.getPLayers().forEach((player) -> {
                     Bukkit.getPlayer(player).spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("WaitingForPlayers..."));
                 });
-                return;
+                continue;
             }
             if(pool.getStartDelay() > 0) {
                 pool.setStartDelay(pool.getStartDelay() -1);
                 pool.getPLayers().forEach((player) -> {
                     Bukkit.getPlayer(player).spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("Starting in " + pool.getStartDelay()));
                 });
-            }else{
-                if(gameManager.PoolToGame(pool)){
-                    pools.remove(pool);
+            }else {
+                if (gameManager.PoolToGame(pool)) {
+                    iterator.remove();
                 }
             }
-        });
+        }
     }
 }

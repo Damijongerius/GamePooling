@@ -30,16 +30,21 @@ public abstract class GameManager extends BukkitRunnable implements Listener {
 
     protected GameManager(List<String> maps) {
         this.maps = maps;
+        System.out.println("Registering games in 5 seconds");
+        Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(GamePooling.class), this::registerGames, 100);
 
+        multiverseCore = GamePooling.getInstance().getMultiverseCore();
+    }
+
+    private void registerGames(){
         AtomicInteger id = new AtomicInteger();
         maps.forEach((name) -> {
             for (int i = 0; i < 2; i++) {
+                System.out.println("Registering game " + name + " with id " + id);
                 registerGame(name, id.get());
                 id.getAndIncrement();
             }
         });
-
-        multiverseCore = GamePooling.getInstance().getMultiverseCore();
     }
 
     public abstract void registerGame(String playground, int id);
@@ -83,19 +88,24 @@ public abstract class GameManager extends BukkitRunnable implements Listener {
     }
 
     public boolean PoolToGame(IPool pool){
+        System.out.println("pool to game");
         AtomicBoolean done = new AtomicBoolean(false);
-        games.forEach((id,game) ->{
-            if(game.getClass() ==  pool.gameClass()){
-                if(game.getGameState() == GameState.WAITING){
-                    game.setPlayers(pool.getPLayers());
-                    games.remove(id);
 
-                    games.put(id,game.startGame());
+        for (Map.Entry<Integer, IGame> entry : games.entrySet()) {
+            int id = entry.getKey();
+
+            if (entry.getValue().getClass() == pool.gameClass()) {
+                if (entry.getValue().getGameState() == GameState.WAITING) {
+
+                    entry.getValue().setPlayers(pool.getPLayers());
+                    ActiveIGame game = entry.getValue().startGame();
+
+                    games.put(id, game);
                     done.set(true);
-                    game.setGameState(GameState.RUNNING);
+                    break;
                 }
             }
-        });
+        }
 
         return done.get();
     }
@@ -111,6 +121,7 @@ public abstract class GameManager extends BukkitRunnable implements Listener {
     }
 
     protected void cloneWorld(String worldName, int id){
+        System.out.println("Cloning world " + worldName + " to " + worldName + id);
         multiverseCore.cloneWorld(worldName, worldName + id, "VoidGen");
     }
 
@@ -139,6 +150,7 @@ public abstract class GameManager extends BukkitRunnable implements Listener {
 
     @Override
     public void run(){
+        System.out.println(games.values().size());
         games.forEach((id,game) ->{
             if(game instanceof ActiveIGame){
                 ((ActiveIGame) game).update();

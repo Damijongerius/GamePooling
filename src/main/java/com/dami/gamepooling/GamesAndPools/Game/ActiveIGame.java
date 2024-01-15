@@ -21,17 +21,17 @@ public abstract class ActiveIGame implements IGame {
 
     public abstract void update();
 
-    public abstract void onPlayerQuit(Player player);
+    public void onPlayerQuit(Player player){};
 
-    public abstract void onPlayerReJoin(Player player);
+    public void onPlayerReJoin(Player player){};
 
-    public abstract void onPlayerDeath(Player player);
+    public void onPlayerDeath(Player player){};
 
-    public abstract void onPlayerRespawn(Player player);
+    public void onPlayerRespawn(Player player){};
 
-    public abstract void onPlayerHitOtherPlayer(Player hitter, Player hit);
+    public void onPlayerHitOtherPlayer(Player hitter, Player hit){};
 
-    public abstract void onPlayerGetHitByEntity(Entity hitter, Player hit);
+    public void onPlayerGetHitByEntity(Entity hitter, Player hit){};
 
     public abstract void CleanGame();
 

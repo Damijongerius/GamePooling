@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-//random change
+//random chang
 
 public abstract class GameManager extends BukkitRunnable implements Listener {
 
